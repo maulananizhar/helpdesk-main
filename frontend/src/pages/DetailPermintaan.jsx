@@ -498,6 +498,21 @@ const DetailPermintaan = () => {
                   />
                 )
               )}
+              <div
+                className={`mx-auto lg:w-2/5 xs:w-2/3 w-full max-w-96 border border-primary shadow rounded-lg text-center my-8 px-6 py-4 ${
+                  data.status === "Selesai" ? "" : "hidden"
+                }`}>
+                <p className="font-medium mb-2">Tiket telah ditutup</p>
+                <p className="mb-4">
+                  Jika Anda masih memiliki pertanyaan atau membutuhkan bantuan
+                  lebih lanjut, silakan buat tiket baru.
+                </p>
+                <a
+                  href="/user/dashboard/buat-permintaan"
+                  className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded transition-colors duration-300">
+                  Tiket Baru
+                </a>
+              </div>
             </div>
             <div className="flex w-full border rounded-b-lg border-primary bg-gray-200 px-4 py-2 gap-2">
               <textarea
