@@ -1,9 +1,7 @@
 // Import React dan hooks yang diperlukan dari library React
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 // Import axios untuk melakukan HTTP request (misalnya POST)
 import axios from "axios";
-// Import useNavigate dari react-router-dom untuk navigasi antar halaman
-import { useNavigate } from "react-router-dom";
 // Import toast dari react-toastify untuk menampilkan notifikasi kepada pengguna
 import { toast } from "react-toastify";
 
@@ -30,7 +28,6 @@ import { AdminContext } from "../../context/AdminContext";
 
 // Import ikon-ikon yang akan digunakan di dalam form
 import userIcon from "../../assets/user.png";
-import roleIcon from "../../assets/role.png";
 import emailIcon from "../../assets/email.png";
 import passIcon from "../../assets/pass2.png";
 import EyeCloseIcon from "../../assets/EyeClose.png";
@@ -39,11 +36,12 @@ import EyeOpenIcon from "../../assets/EyeOpen.png";
 // Membuat komponen kustom StyledPaper menggunakan fungsi styled dari Material UI
 // Komponen ini digunakan untuk membungkus form dengan padding, bayangan, dan lebar maksimal
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(4),              // Padding berdasarkan spacing dari tema Material UI
-  maxWidth: 500,                          // Lebar maksimal 500px
-  margin: "auto",                         // Mengatur margin agar form terpusat secara horizontal
-  marginTop: theme.spacing(8),            // Margin atas berdasarkan tema
-  [theme.breakpoints.down("sm")]: {       // Responsif: jika layar kecil, atur lebar dan padding
+  padding: theme.spacing(4), // Padding berdasarkan spacing dari tema Material UI
+  maxWidth: 500, // Lebar maksimal 500px
+  margin: "auto", // Mengatur margin agar form terpusat secara horizontal
+  marginTop: theme.spacing(8), // Margin atas berdasarkan tema
+  [theme.breakpoints.down("sm")]: {
+    // Responsif: jika layar kecil, atur lebar dan padding
     maxWidth: "90%",
     padding: theme.spacing(3),
   },
@@ -68,24 +66,23 @@ const RegistUser = () => {
 
   // Menggunakan useContext untuk mengakses AdminContext, khususnya token otorisasi (aToken)
   const { aToken } = useContext(AdminContext);
-  // Menggunakan useNavigate untuk mendapatkan fungsi navigate guna berpindah halaman setelah aksi tertentu
-  const navigate = useNavigate();
 
   // handleChange: fungsi untuk menangani perubahan input form
   // Menggunakan spread operator untuk meng-copy nilai formData yang lama dan memperbarui properti yang sesuai
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // handleSubmit: fungsi untuk menangani pengiriman (submit) form
   // Fungsi ini bersifat asynchronous (async) untuk menangani operasi HTTP request dengan axios
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault(); // Mencegah perilaku default form (refresh halaman)
 
     // Validasi input: pastikan semua bidang terisi
     if (
       !formData.nama ||
       !formData.role ||
+      !formData.unit ||
       !formData.email ||
       !formData.password ||
       !formData.confirmPassword
@@ -108,6 +105,7 @@ const RegistUser = () => {
         {
           nama: formData.nama,
           role: formData.role,
+          unit: formData.unit,
           email: formData.email,
           password: formData.password,
         },
@@ -118,6 +116,7 @@ const RegistUser = () => {
       setFormData({
         nama: "",
         role: "",
+        unit: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -133,7 +132,7 @@ const RegistUser = () => {
 
   return (
     // Container dari Material UI yang mengatur lebar maksimal form
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" className="mb-16">
       {/* StyledPaper adalah komponen kustom yang sudah kita buat untuk membungkus form */}
       <StyledPaper elevation={4}>
         {/* Typography digunakan untuk menampilkan judul */}
@@ -144,18 +143,19 @@ const RegistUser = () => {
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
           {/* Input Nama */}
           <TextField
-            fullWidth                // Mengisi lebar penuh
-            variant="outlined"        // Menggunakan style outlined
-            label="Nama"              // Label input
-            name="nama"               // Name digunakan sebagai key di formData
-            value={formData.nama}     // Nilai input sesuai state formData.nama
-            onChange={handleChange}   // Fungsi handleChange untuk menangani perubahan input
-            margin="normal"           // Margin standar antar input
+            fullWidth // Mengisi lebar penuh
+            variant="outlined" // Menggunakan style outlined
+            label="Nama" // Label input
+            name="nama" // Name digunakan sebagai key di formData
+            value={formData.nama} // Nilai input sesuai state formData.nama
+            onChange={handleChange} // Fungsi handleChange untuk menangani perubahan input
+            margin="normal" // Margin standar antar input
             InputProps={{
-              startAdornment: (     // Menggunakan InputAdornment untuk menambahkan ikon di awal input
+              // Menggunakan InputAdornment untuk menambahkan ikon di awal input
+              startAdornment: (
                 <InputAdornment position="start">
                   <img
-                    src={userIcon}  // Sumber ikon user
+                    src={userIcon} // Sumber ikon user
                     alt="User Icon"
                     style={{ width: 20, height: 20 }}
                   />
@@ -171,13 +171,77 @@ const RegistUser = () => {
               label="Role"
               name="role"
               value={formData.role}
-              onChange={handleChange}
-            >
+              onChange={handleChange}>
               <MenuItem value="">
                 <em>Pilih Role</em>
               </MenuItem>
               <MenuItem value="Admin">Admin</MenuItem>
               <MenuItem value="PIC">PIC</MenuItem>
+              <MenuItem value="User">User</MenuItem>
+            </Select>
+          </FormControl>
+          {/* Dropdown Unit */}
+          <FormControl fullWidth variant="outlined" margin="normal">
+            <InputLabel id="unit-label">Unit</InputLabel>
+            <Select
+              labelId="unit-label"
+              label="Unit"
+              name="unit"
+              value={formData.unit}
+              onChange={handleChange}>
+              <MenuItem value="">
+                <em>Pilih Unit</em>
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama Manajemen Pencegahan Maladministrasi">
+                Keasistenan Utama Manajemen Pencegahan Maladministrasi
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama Pengaduan Masyarakat">
+                Keasistenan Utama Pengaduan Masyarakat
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama Manajemen Mutu">
+                Keasistenan Utama Manajemen Mutu
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama Resolusi dan Monitoring">
+                Keasistenan Utama Resolusi dan Monitoring
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama I">
+                Keasistenan Utama I
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama II">
+                Keasistenan Utama II
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama III">
+                Keasistenan Utama III
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama IV">
+                Keasistenan Utama IV
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama V">
+                Keasistenan Utama V
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama VI">
+                Keasistenan Utama VI
+              </MenuItem>
+              <MenuItem value="Keasistenan Utama VII">
+                Keasistenan Utama VII
+              </MenuItem>
+              <MenuItem value="Biro Administrasi Pengawasan Penyelenggaraan Pelayanan Publik (AP4)">
+                Biro Administrasi Pengawasan Penyelenggaraan Pelayanan Publik
+                (AP4)
+              </MenuItem>
+              <MenuItem value="Biro Sumber Daya Manusia dan Umum">
+                Biro Sumber Daya Manusia dan Umum
+              </MenuItem>
+              <MenuItem value="Biro Hukum, Kerja Sama dan Organisasi">
+                Biro Hukum, Kerja Sama dan Organisasi
+              </MenuItem>
+              <MenuItem value="Biro Hubungan Masyarakat dan Teknologi Informasi">
+                Biro Hubungan Masyarakat dan Teknologi Informasi
+              </MenuItem>
+              <MenuItem value="Biro Perencanaan dan Keuangan">
+                Biro Perencanaan dan Keuangan
+              </MenuItem>
+              <MenuItem value="Inspektorat">Inspektorat</MenuItem>
             </Select>
           </FormControl>
           {/* Input Email */}
@@ -186,7 +250,7 @@ const RegistUser = () => {
             variant="outlined"
             label="Email"
             name="email"
-            type="email"              // Tipe input email
+            type="email" // Tipe input email
             value={formData.email}
             onChange={handleChange}
             margin="normal"
@@ -194,7 +258,7 @@ const RegistUser = () => {
               startAdornment: (
                 <InputAdornment position="start">
                   <img
-                    src={emailIcon}    // Ikon email
+                    src={emailIcon} // Ikon email
                     alt="Email Icon"
                     style={{ width: 20, height: 20 }}
                   />
@@ -217,7 +281,7 @@ const RegistUser = () => {
               startAdornment: (
                 <InputAdornment position="start">
                   <img
-                    src={passIcon}     // Ikon password
+                    src={passIcon} // Ikon password
                     alt="Password Icon"
                     style={{ width: 20, height: 20 }}
                   />
@@ -227,9 +291,8 @@ const RegistUser = () => {
                 <InputAdornment position="end">
                   {/* IconButton untuk toggle tampilan password */}
                   <IconButton
-                    onClick={() => setShowPassword((prev) => !prev)} // Menggunakan arrow function untuk toggle boolean
-                    edge="end"
-                  >
+                    onClick={() => setShowPassword(prev => !prev)} // Menggunakan arrow function untuk toggle boolean
+                    edge="end">
                     <img
                       src={showPassword ? EyeOpenIcon : EyeCloseIcon} // Tampilkan ikon berbeda berdasarkan showPassword
                       alt="Toggle Password"
@@ -254,7 +317,7 @@ const RegistUser = () => {
               startAdornment: (
                 <InputAdornment position="start">
                   <img
-                    src={passIcon}     // Ikon password untuk konfirmasi
+                    src={passIcon} // Ikon password untuk konfirmasi
                     alt="Confirm Password Icon"
                     style={{ width: 20, height: 20 }}
                   />
@@ -263,9 +326,8 @@ const RegistUser = () => {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    edge="end"
-                  >
+                    onClick={() => setShowConfirmPassword(prev => !prev)}
+                    edge="end">
                     <img
                       src={showConfirmPassword ? EyeOpenIcon : EyeCloseIcon}
                       alt="Toggle Confirm Password"
@@ -278,12 +340,12 @@ const RegistUser = () => {
           />
           {/* Tombol Submit */}
           <Button
-            type="submit"               // Jenis tombol submit untuk form
+            type="submit" // Jenis tombol submit untuk form
             fullWidth
             variant="contained"
             color="primary"
-            sx={{ mt: 3 }}              // Margin atas untuk memberikan jarak dari input terakhir
-            disabled={loading}          // Nonaktifkan tombol jika loading true
+            sx={{ mt: 3 }} // Margin atas untuk memberikan jarak dari input terakhir
+            disabled={loading} // Nonaktifkan tombol jika loading true
           >
             {loading ? "Menambahkan..." : "Tambah User"}
           </Button>

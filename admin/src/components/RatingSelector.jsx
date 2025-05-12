@@ -20,10 +20,10 @@ function RatingSelector(props) {
           className={`px-4 py-2 h-fit border cursor-pointer ${
             props.darkMode
               ? props.rating === rate.rating
-                ? "bg-gray-800 border-yellow-400"
+                ? "bg-gray-800 border-primary text-primary"
                 : "bg-gray-800 border-gray-950"
               : props.rating === rate.rating
-              ? "bg-gray-100 border-yellow-400"
+              ? "bg-gray-100 border-primary text-primary"
               : "bg-gray-100 border-gray-300"
           }`}
           onClick={() => props.setRating(rate.rating)}>

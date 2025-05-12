@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material"; // Mengimpor TextField dari MUI
+import { Autocomplete, TextField } from "@mui/material"; // Mengimpor TextField dari MUI
 import { useEffect, useState } from "react"; // // Mengimpor useEffect dan useState dari React
 import { useNavigate } from "react-router-dom"; // // Mengimpor useNavigate dari React Router DOM
 import { toast } from "react-toastify"; // Mengimport toast dari react-toastify
@@ -6,6 +6,19 @@ import { toast } from "react-toastify"; // Mengimport toast dari react-toastify
 import LogoOriVertical from "../assets/logo_ori_vertical.webp"; // // Mengimpor logo dari direktori aset
 import registerHandler from "../libs/registerHandler"; // Mengimpor fungsi registerHandler dari libs/registerHandler
 import verifyToken from "../libs/VerifyToken"; // Mengimpor fungsi verifyToken dari libs/VerifyToken
+
+// Option untuk Autocomplete unit
+const unitOptions = [
+  "HMTI",
+  "HKO",
+  "KU1",
+  "KU2",
+  "KU3",
+  "KU4",
+  "KU5",
+  "KU6",
+  "KU7",
+];
 
 const RegisterPage = () => {
   // Mendapatkan instance dari useNavigate untuk navigasi
@@ -57,6 +70,7 @@ const RegisterPage = () => {
             Silahkan isi formulir untuk membuat akun baru.
           </p>
           <form
+            className="flex flex-col w-full"
             onSubmit={e =>
               registerHandler(
                 e,
@@ -87,13 +101,17 @@ const RegisterPage = () => {
               }
               margin="normal"
             />
-            <TextField
+            <Autocomplete
+              disablePortal
               fullWidth
-              label="Unit"
-              type="text"
+              options={unitOptions}
+              renderInput={params => <TextField {...params} label="Unit" />}
+              onChange={(event, newValue) => {
+                setAuthData({ ...authData, unit: newValue });
+              }}
               value={authData.unit}
-              onChange={e => setAuthData({ ...authData, unit: e.target.value })}
               margin="normal"
+              className="mt-3 mb-1"
             />
             <TextField
               fullWidth

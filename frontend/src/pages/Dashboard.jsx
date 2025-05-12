@@ -86,7 +86,7 @@ const Dashboard = () => {
         <div className="grow bg-white h-screen flex flex-col justify-start p-6 overflow-y-auto md:mt-0 mt-16">
           <div className="flex justify-between items-center mb-8">
             <p className="text-2xl font-bold">Dashboard Pengguna</p>
-            <a href="/user/dashboard/settings" className="flex items-center">
+            <a href="#" className="flex items-center">
               <img
                 src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.name}`}
                 alt={user?.name}
@@ -141,29 +141,34 @@ const Dashboard = () => {
                     </td>
                   </tr>
                 ) : (
-                  forms.map((form, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="px-3 py-2">{form.ticket}</td>
-                      <td className="px-4 py-2">
-                        {convertTimezone(form.tanggaldibuat)}
-                      </td>
-                      <td className="px-4 py-2">{form.unit}</td>
-                      <td className="px-4 py-2">
-                        {form.pics[0] == null
-                          ? "Belum ditugaskan"
-                          : form.pics.join(" | ")}
-                      </td>
-                      <td className="px-4 py-2">
-                        {form.subjenislayanan == null
-                          ? "-"
-                          : form.subjenislayanan}
-                      </td>
-                      <td className="px-4 py-2">
-                        {form.jenislayanan == null ? "-" : form.jenislayanan}
-                      </td>
-                      <td className="px-4 py-2">{form.status}</td>
-                    </tr>
-                  ))
+                  forms.map(
+                    (form, index) =>
+                      index < 5 && (
+                        <tr key={index} className="border-b">
+                          <td className="px-3 py-2">{form.ticket}</td>
+                          <td className="px-4 py-2">
+                            {convertTimezone(form.tanggaldibuat)}
+                          </td>
+                          <td className="px-4 py-2">{form.unit}</td>
+                          <td className="px-4 py-2">
+                            {form.pics[0] == null
+                              ? "Belum ditugaskan"
+                              : form.pics.join(" | ")}
+                          </td>
+                          <td className="px-4 py-2">
+                            {form.subjenislayanan == null
+                              ? "-"
+                              : form.subjenislayanan}
+                          </td>
+                          <td className="px-4 py-2">
+                            {form.jenislayanan == null
+                              ? "-"
+                              : form.jenislayanan}
+                          </td>
+                          <td className="px-4 py-2">{form.status}</td>
+                        </tr>
+                      )
+                  )
                 )}
               </tbody>
             </table>
@@ -175,19 +180,22 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <>
-                    {forms.map((form, index) => (
-                      <PermintaanCard
-                        key={index}
-                        ticket={form.ticket}
-                        pics={form.pics}
-                        tanggal={form.tanggaldibuat}
-                        unit={form.unit}
-                        jenisLayanan={form.subjenislayanan}
-                        subJenisLayanan={form.jenislayanan}
-                        status={form.status}
-                        detail={false}
-                      />
-                    ))}
+                    {forms.map(
+                      (form, index) =>
+                        index < 5 && (
+                          <PermintaanCard
+                            key={index}
+                            ticket={form.ticket}
+                            pics={form.pics}
+                            tanggal={form.tanggaldibuat}
+                            unit={form.unit}
+                            jenisLayanan={form.subjenislayanan}
+                            subJenisLayanan={form.jenislayanan}
+                            status={form.status}
+                            detail={false}
+                          />
+                        )
+                    )}
                   </>
                 )}
               </div>
@@ -197,7 +205,7 @@ const Dashboard = () => {
             <p className="text-lg font-bold">Notifikasi sistem</p>
           </div>
           <div className="flex">
-            <table className="w-full text-left">
+            <table className="w-full text-left mb-16">
               <thead className="bg-primary text-white">
                 <tr>
                   <th className="px-3 py-2">Notifikasi</th>

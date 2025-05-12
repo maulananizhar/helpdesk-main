@@ -55,16 +55,9 @@ const LupaSandi = () => {
               Kirim Email
             </button>
           </form>
-          <div className="flex justify-center mt-4 mx-auto">
-            <a
-              href="/admin/login"
-              className="text-center font-medium hover:underline">
-              Login sebagai Admin
-            </a>
-          </div>
           <div className="flex justify-center mt-2 mx-auto">
-            <a href="/user/register" className="text-center hover:underline">
-              Belum punya akun? Silakan daftar di sini.
+            <a href="/user/login" className="text-center hover:underline">
+              Ingat kata sandi anda? Silakan masuk di sini.
             </a>
           </div>
         </div>

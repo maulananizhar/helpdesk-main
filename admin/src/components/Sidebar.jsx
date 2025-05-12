@@ -177,10 +177,10 @@ const Sidebar = () => {
                     <span className="ml-3">Data Statistik</span>
                   </NavLink>
                   <NavLink
-                    to="/ulasan-pengguna"
+                    to="/ulasan-helpdesk"
                     onClick={resetAdminBubble}
                     className={navLinkClasses}>
-                    <span className="ml-3">Ulasan Pengguna</span>
+                    <span className="ml-3">Ulasan Helpdesk</span>
                   </NavLink>
                   <NavLink
                     to="/ulasan-pic"

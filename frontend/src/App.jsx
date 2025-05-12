@@ -3,11 +3,10 @@ import { ToastContainer } from "react-toastify"; // Import ToastContainer untuk 
 import "react-toastify/dist/ReactToastify.css"; // Import css untuk notifikasi
 
 // Import halaman yang akan dirender
-import Formulir from "./pages/formulir";
 import FormInformationPage from "./pages/FormInformationPage";
 import Beranda from "./pages/Beranda";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+// import RegisterPage from "./pages/RegisterPage";
 import Dashboard from "./pages/Dashboard";
 import AccountVerify from "./pages/AccountVerify";
 import NotFound from "./pages/NotFound";
@@ -15,6 +14,7 @@ import PermintaanSaya from "./pages/PermintaanSaya";
 import DetailPermintaan from "./pages/DetailPermintaan";
 import AturSandi from "./pages/AturSandi";
 import LupaSandi from "./pages/LupaSandi";
+import BuatPermintaanWrapper from "./pages/BuatPermintaan";
 
 const App = () => {
   return (
@@ -26,7 +26,7 @@ const App = () => {
         {/* Membuat route untuk halaman login */}
         <Route exact path="/user/login" element={<LoginPage />} />
         {/* Membuat route untuk halaman register */}
-        <Route exact path="/user/register" element={<RegisterPage />} />
+        {/* <Route exact path="/user/register" element={<RegisterPage />} /> */}
         {/* Membuat route untuk halaman verifikasi */}
         <Route exact path="/user/verify/:token" element={<AccountVerify />} />
         {/* Membuat route untuk halaman lupa kata sandi */}
@@ -51,7 +51,7 @@ const App = () => {
         <Route
           exact
           path="/user/dashboard/buat-permintaan"
-          element={<Formulir />}
+          element={<BuatPermintaanWrapper />}
         />
         {/* Membuat route untuk halaman informasi formulir */}
         <Route

@@ -56,14 +56,14 @@ const DetailPermintaan = () => {
     ratingPIC: 1,
   });
 
+  // Fungsi untuk mengambil data form berdasarkan tiket
+  const fetchForms = async () => {
+    const result = await getFormByTicket(ticket);
+    setData(result);
+  };
+
   // Menggunakan useEffect untuk melakukan fetch data form berdasarkan tiket
   useEffect(() => {
-    // Fungsi untuk mengambil data form berdasarkan tiket
-    const fetchForms = async () => {
-      const result = await getFormByTicket(ticket);
-      setData(result);
-    };
-
     fetchForms();
 
     // Memverifikasi token dan mengatur loading state
@@ -86,7 +86,7 @@ const DetailPermintaan = () => {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, data]);
 
   // Menggunakan useEffect untuk mengatur socket dan mendengarkan event dari server
   useEffect(() => {
@@ -116,6 +116,7 @@ const DetailPermintaan = () => {
 
       socket.on("receive-notification", data => {
         toast.info(data.message); // Menerima notifikasi
+        fetchForms(); // Ambil ulang data form
       });
     }
 
@@ -475,7 +476,11 @@ const DetailPermintaan = () => {
             <p className="font-bold">Pesan dengan PIC</p>
             <div
               ref={chatContainerRef}
-              className="w-full h-[400px] max-h-[400px] overflow-y-auto no-scrollbar flex flex-col bg-white border-primary border-t border-x rounded-t-lg shadow items-start mt-4 px-4 pt-4">
+              className={`w-full h-[400px] max-h-[400px] overflow-y-auto no-scrollbar flex flex-col bg-white border-primary ${
+                data.status === "Selesai"
+                  ? "border rounded-lg mb-16"
+                  : "border-t border-x rounded-t-lg"
+              } shadow items-start mt-4 px-4 pt-4`}>
               <div className="w-full border border-primary bg-white rounded-lg px-4 py-2 sticky top-0">
                 <p className="font-medium">Tiket Pesan : {data.ticket}</p>
               </div>
@@ -484,9 +489,10 @@ const DetailPermintaan = () => {
                   <BubbleChat
                     key={index}
                     sender={message.name}
-                    role="Me"
-                    myRole="Me"
+                    role="Saya"
+                    myRole="Saya"
                     message={message.message}
+                    date={message.created_at}
                   />
                 ) : (
                   <BubbleChat
@@ -495,6 +501,7 @@ const DetailPermintaan = () => {
                     role={message.role}
                     myRole={user.role}
                     message={message.message}
+                    date={message.created_at}
                   />
                 )
               )}
@@ -514,7 +521,10 @@ const DetailPermintaan = () => {
                 </a>
               </div>
             </div>
-            <div className="flex w-full border rounded-b-lg border-primary bg-gray-200 px-4 py-2 gap-2">
+            <div
+              className={`${
+                data.status === "Selesai" ? "hidden" : "flex mb-16"
+              } w-full border rounded-b-lg border-primary bg-gray-200 px-4 py-2 gap-2`}>
               <textarea
                 ref={textareaRef}
                 rows="1"

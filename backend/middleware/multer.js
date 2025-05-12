@@ -8,23 +8,23 @@ const storage = multer.diskStorage({
   // Fungsi destination menentukan folder tujuan penyimpanan file
   destination: (req, file, cb) => {
     // cb menerima null sebagai error dan "uploads/" sebagai folder tujuan
-    cb(null, "uploads/"); 
+    cb(null, "uploads/");
   },
   // Fungsi filename menentukan nama file yang disimpan
   filename: (req, file, cb) => {
     // Gabungkan timestamp (Date.now()) dengan ekstensi file asli
     cb(null, Date.now() + path.extname(file.originalname));
-  }
+  },
 });
 
 // Fungsi fileFilter untuk memfilter jenis file yang diizinkan
 const fileFilter = (req, file, cb) => {
   // Daftar tipe file yang diizinkan (di sini hanya PDF)
   const allowedTypes = [
-    "application/pdf",  // PDF
+    "application/pdf", // PDF
     // Jika diperlukan, tipe file lainnya dapat diaktifkan dengan menghilangkan komentar
-    // "image/jpeg", // JPEG
-    // "image/png", // PNG
+    "image/jpeg", // JPEG
+    "image/png", // PNG
     // "application/msword", // DOC
     // "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
     // "application/zip", // ZIP
@@ -36,7 +36,7 @@ const fileFilter = (req, file, cb) => {
     // "video/x-msvideo", // AVI
     // "video/x-matroska" // MKV
   ];
-  
+
   // Cek apakah tipe file (mimetype) ada dalam daftar allowedTypes
   if (allowedTypes.includes(file.mimetype)) {
     // Jika diizinkan, callback menerima null sebagai error dan true untuk mengizinkan file
@@ -49,9 +49,9 @@ const fileFilter = (req, file, cb) => {
 
 // Konfigurasi middleware multer dengan penyimpanan, filter file, dan batas ukuran file
 const upload = multer({
-  storage: storage,               // Gunakan konfigurasi penyimpanan yang telah didefinisikan
-  fileFilter: fileFilter,         // Gunakan filter untuk memeriksa tipe file
-  limits: { fileSize: 1024 * 1024 * 20 } // Batasi ukuran file maksimum sebesar 20 MB (1024*1024*20 byte)
+  storage: storage, // Gunakan konfigurasi penyimpanan yang telah didefinisikan
+  fileFilter: fileFilter, // Gunakan filter untuk memeriksa tipe file
+  limits: { fileSize: 1024 * 1024 * 20 }, // Batasi ukuran file maksimum sebesar 20 MB (1024*1024*20 byte)
 });
 
 // Ekspor middleware upload agar dapat digunakan di bagian lain aplikasi

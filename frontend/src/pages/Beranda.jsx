@@ -95,11 +95,11 @@ const Beranda = () => {
                 Masuk
               </div>
             </a>
-            <a href="/user/register" className="flex">
+            {/* <a href="/user/register" className="flex">
               <div className="bg-primary text-white px-4 py-2 rounded-lg">
                 Daftar
               </div>
-            </a>
+            </a> */}
           </div>
           <hr />
         </div>
@@ -152,11 +152,11 @@ const Beranda = () => {
               className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors duration-300">
               Masuk
             </a>
-            <a
+            {/* <a
               href="/user/register"
               className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors duration-300">
               Daftar
-            </a>
+            </a> */}
           </div>
         </div>
       </nav>
@@ -286,14 +286,17 @@ const Beranda = () => {
             </a>
             <div className="flex gap-2 items-center hover:text-primary transition-colors duration-300">
               <MdCall className="w-4 h-4" />
-              <a href="tel:+622122513737" className="text-sm">
+              <a href="tel:+622122513737" target="_blank" className="text-sm">
                 (021) 2251 3737
               </a>
             </div>
             <div className="flex gap-2 items-center hover:text-primary transition-colors duration-300">
               <MdMarkunread className="w-4 h-4" />
-              <a href="mailto:persuratan@ombudsman.go.id" className="text-sm">
-                persuratan@ombudsman.go.id
+              <a
+                href="mailto:persuratan[at]ombudsman.go.id"
+                target="_blank"
+                className="text-sm">
+                persuratan[at]ombudsman.go.id
               </a>
             </div>
           </div>

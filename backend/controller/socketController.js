@@ -29,15 +29,24 @@ const sendMessage = async (io, socket) => {
     socket.join(data.room);
 
     // Mengirim pesan ke database
-    await saveMessageToDatabase(
+    const message = await saveMessageToDatabase(
       data.room,
       data.name,
       data.sender,
       data.role,
       data.message
     );
+
     // Mengirim pesan ke room
-    io.to(data.room).emit("receive-message", data);
+    io.to(data.room).emit("receive-message", {
+      id: message.id,
+      room: message.room,
+      name: message.name,
+      sender: message.sender,
+      role: message.role,
+      message: message.message,
+      created_at: message.created_at,
+    });
   });
 };
 

@@ -13,13 +13,9 @@ import Select from "react-select";
 // Import DarkModeContext untuk mengakses status dark mode (apakah aktif atau tidak)
 import { DarkModeContext } from "../../context/DarkModeContext";
 
-import { TextField } from "@mui/material"; // Import TextField dari Material UI untuk input teks
-
 import { io } from "socket.io-client"; // Mengimpor socket.io untuk komunikasi real-time
 import BubbleChat from "../../components/BubbleChat"; // Import komponen BubbleChat untuk menampilkan pesan chat
 import { jwtDecode } from "jwt-decode"; // Import library jwt-decode untuk mendekode token JWT
-import convertTimezone from "../../libs/convertTimezone"; // untuk mengonversi zona waktu
-import addTimeline from "../../libs/addTimeline"; // import addTimeline untuk menambahkan timeline
 
 // socket.io client untuk komunikasi real-time
 const socket = io(import.meta.env.VITE_BACKEND_URL);
@@ -34,24 +30,6 @@ const EditFormulir = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   // State untuk menyimpan data timeline
-  const [timeline, setTimeline] = useState([]);
-
-  // State untuk menyimpan status modal (apakah terbuka atau tidak)
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  //  State untuk menyimpan data modal (judul dan subjudul)
-  const [modalData, setModalData] = useState({
-    title: "",
-    subtitle: "",
-  });
-
-  // Handle untuk mengubah status modal (apakah terbuka atau tidak)
-  const handleModalOpen = () => {
-    setModalIsOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setModalIsOpen(false);
-  };
 
   // useParams() digunakan untuk mengekstrak parameter URL; di sini, 'id' formulir
   const { id } = useParams();
@@ -71,6 +49,7 @@ const EditFormulir = () => {
   // formData menyimpan data formulir yang akan diedit, dengan nilai default sebagai objek kosong atau default value
   const [formData, setFormData] = useState({
     layanan: "",
+    status: "",
     tindak_lanjut: "",
     pics: [],
     id_jenislayanan: null,
@@ -78,13 +57,41 @@ const EditFormulir = () => {
     dokumen: null,
     ticket: "",
   });
-  // State untuk status formulir; default adalah "Pending"
-  const [status, setStatus] = useState("Pending");
   // State untuk data jenis layanan dan sub jenis layanan, yang akan diambil dari server
   const [jenisLayanan, setJenisLayanan] = useState([]);
   const [subJenisLayanan, setSubJenisLayanan] = useState([]);
 
   const [user, setUser] = useState(null);
+
+  // Custom styles untuk react-select, menggunakan arrow functions dan spread operator untuk menggabungkan style default
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: darkMode
+        ? "#4a5565"
+        : state.isDisabled
+        ? "#f3f4f6"
+        : "#fff", // Warna background dropdown
+      border: state.isDisabled ? "0" : "1px solid #000",
+      color: "#ff0000",
+    }),
+    singleValue: provided => ({
+      ...provided,
+      color: darkMode ? "#e5e7eb" : "#364153", // Warna teks dropdown // Teks berwarna hitam jika dark mode aktif
+    }),
+    input: provided => ({
+      ...provided,
+      color: darkMode ? "black" : provided.color,
+    }),
+    option: provided => ({
+      ...provided,
+      color: darkMode ? "black" : provided.color, // Teks berwarna hitam jika dark mode aktif
+    }),
+    placeholder: provided => ({
+      ...provided,
+      color: darkMode ? "black" : provided.color,
+    }),
+  };
 
   // useEffect untuk menjalankan fungsi saat komponen dimount atau saat aToken berubah
   // Di sini, jika aToken tersedia, maka beberapa fungsi data akan dipanggil
@@ -115,14 +122,6 @@ const EditFormulir = () => {
       socket.on("receive-message", data => {
         setMessages(prevMessages => [...prevMessages, data]); // Menerima pesan
       });
-
-      socket.on("timeline-history", timeline => {
-        setTimeline(timeline); // Atur riwayat timeline
-      });
-
-      socket.on("receive-timeline", data => {
-        setTimeline(prevTimeline => [...prevTimeline, data]); // Menerima timeline
-      });
     }
 
     // Membersihkan event listener saat komponen unmount
@@ -145,7 +144,7 @@ const EditFormulir = () => {
   const handleSend = () => {
     if (message.trim() === "") return;
     // Jika status bukan "Selesai", maka kirim pesan
-    if (status === "Selesai") {
+    if (formData.status === "Selesai") {
       toast.error("Permintaan sudah selesai! anda tidak dapat mengirim pesan!");
       return;
     }
@@ -190,6 +189,7 @@ const EditFormulir = () => {
       setFormData({
         email: response.data.email || "",
         layanan: response.data.layanan || "",
+        status: response.data.status || "",
         tindak_lanjut: response.data.tindak_lanjut || "",
         pics: response.data.pics || [],
         id_jenislayanan: response.data.id_jenislayanan || null,
@@ -198,7 +198,7 @@ const EditFormulir = () => {
         ticket: response.data.ticket || "",
       });
       // Mengupdate state status berdasarkan data yang diterima, default ke "Pending"
-      setStatus(response.data.status || "Pending");
+      // setStatus(response.data.status || "Pending");
     } catch (error) {
       // Jika terjadi error, tampilkan notifikasi error menggunakan toast
       toast.error("Gagal mengambil data formulir!");
@@ -277,6 +277,22 @@ const EditFormulir = () => {
   // Fungsi untuk menyimpan perubahan data formulir (mengirim PUT request)
   const handleSave = async () => {
     try {
+      // Validasi formData sebelum mengirim request
+      if (
+        formData.id_jenislayanan === null ||
+        formData.id_subjenislayanan === null
+      ) {
+        toast.error("Silahkan pilih jenis layanan dan sub jenis layanan!");
+        return;
+      }
+      if (formData.pics.length === 0) {
+        toast.error("Silahkan pilih PIC!");
+        return;
+      }
+      if (formData.status === "Selesai") {
+        toast.error("Permintaan sudah selesai! anda tidak dapat mengubahnya!");
+        return;
+      }
       // Membuat objek requestData dengan properti yang akan diperbarui
       const requestData = {
         tindak_lanjut: formData.tindak_lanjut,
@@ -299,15 +315,15 @@ const EditFormulir = () => {
           .join(", ") || "PIC";
 
       if (formData.pics.length > 0) {
-        await addTimeline(
-          formData.ticket,
-          "Diserahkan ke PIC",
-          `Laporan diberikan kepada PIC atas nama ${names}`
-        );
+        socket.emit("send-timeline", {
+          ticket: formData.ticket,
+          title: "Dikerahkan ke PIC",
+          subtitle: `Permintaan dikerahkan kepada PIC atas nama ${names}`,
+        });
         socket.emit("send-notification", {
           sender: user.email,
           receiver: formData.email,
-          message: `Laporan anda telah diserahkan kepada PIC (${names}) - ${formData.ticket}`,
+          message: `Permintaan anda telah dikerahkan kepada PIC (${names}) - ${formData.ticket}`,
         });
       }
 
@@ -339,98 +355,10 @@ const EditFormulir = () => {
   const labelClass = darkMode ? "text-gray-200" : "text-gray-700";
   const bgCard = darkMode ? "bg-gray-600" : "bg-gray-100";
 
-  // Custom styles untuk react-select, menggunakan arrow functions dan spread operator untuk menggabungkan style default
-  const customSelectStyles = {
-    control: provided => ({
-      ...provided,
-      backgroundColor: darkMode ? "#f9f9f9" : provided.backgroundColor,
-    }),
-    singleValue: provided => ({
-      ...provided,
-      color: darkMode ? "black" : provided.color,
-    }),
-    input: provided => ({
-      ...provided,
-      color: darkMode ? "black" : provided.color,
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      color: darkMode ? "black" : provided.color,
-      backgroundColor: state.isFocused
-        ? darkMode
-          ? "#e0e0e0"
-          : "#eee"
-        : darkMode
-        ? "#f9f9f9"
-        : provided.backgroundColor,
-    }),
-    placeholder: provided => ({
-      ...provided,
-      color: darkMode ? "black" : provided.color,
-    }),
-  };
-
   // Return statement: mengembalikan JSX (syntax untuk membuat elemen React)
   // Di sini digunakan juga Tailwind CSS untuk styling kelas (className) yang bersifat utilitas
   return (
     <>
-      {/* Membuat modal box untuk tambah timeline*/}
-      {modalIsOpen && (
-        <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50">
-          <div
-            className={`${
-              darkMode ? "bg-gray-700 text-gray-200" : "bg-white text-gray-900"
-            } w-full max-w-lg p-6 rounded-lg shadow-lg`}>
-            <h2 className="text-xl font-bold mb-6">Tambah Timeline</h2>
-            <div className="mb-6">
-              <TextField
-                fullWidth
-                label="Judul"
-                type="text"
-                value={modalData.title}
-                onChange={e =>
-                  setModalData({ ...modalData, title: e.target.value })
-                }
-              />
-            </div>
-            <div className="mb-4">
-              <TextField
-                fullWidth
-                label="Sub Judul"
-                type="text"
-                value={modalData.subtitle}
-                onChange={e =>
-                  setModalData({ ...modalData, subtitle: e.target.value })
-                }
-              />
-            </div>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={handleModalClose}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
-                Batal
-              </button>
-              <button
-                onClick={async () => {
-                  socket.emit("send-timeline", {
-                    ticket: formData.ticket,
-                    title: modalData.title,
-                    subtitle: modalData.subtitle,
-                  });
-                  socket.emit("send-notification", {
-                    sender: user.email,
-                    receiver: formData.email,
-                    message: `Laporan anda telah diperbarui - ${formData.ticket}`,
-                  });
-                  handleModalClose();
-                }}
-                className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg">
-                Simpan
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <div
         className={`p-8 min-h-screen flex flex-col justify-center items-center ${
           darkMode ? "bg-gray-800 text-gray-200" : "bg-gray-50 text-gray-900"
@@ -456,7 +384,7 @@ const EditFormulir = () => {
             <label className={`block ${labelClass} font-medium mb-1`}>
               Status:
             </label>
-            <p className={`${bgCard} p-3 rounded`}>{status}</p>
+            <p className={`${bgCard} p-3 rounded`}>{formData.status}</p>
           </div>
 
           {/* Bagian Layanan: menampilkan nilai layanan */}
@@ -475,6 +403,7 @@ const EditFormulir = () => {
               Jenis Layanan:
             </label>
             <Select
+              isDisabled={formData.status === "Selesai"}
               styles={customSelectStyles} // Custom styles untuk menyesuaikan tema dark/light
               options={subJenisLayanan.map(sub => ({
                 value: sub.id,
@@ -513,6 +442,7 @@ const EditFormulir = () => {
               Sub Jenis Layanan:
             </label>
             <Select
+              isDisabled={formData.status === "Selesai"}
               styles={customSelectStyles}
               options={jenisLayanan.map(jl => ({
                 value: jl.id,
@@ -545,6 +475,7 @@ const EditFormulir = () => {
               Assign PIC:
             </label>
             <Select
+              isDisabled={formData.status === "Selesai"}
               styles={customSelectStyles}
               isMulti // Mengizinkan pemilihan banyak PIC sekaligus
               options={PICsData.map(pic => ({
@@ -584,62 +515,12 @@ const EditFormulir = () => {
             )}
           </div>
 
-          <div className="w-full mb-8">
-            <p className={`block ${labelClass} font-medium mb-1`}>Timeline</p>
-            <table className="w-full text-center">
-              <thead className="bg-primary text-white">
-                <tr>
-                  <th className="px-4 py-2 w-3/12">Tanggal</th>
-                  <th className="px-4 py-2">Judul</th>
-                  <th className="px-4 py-2">Sub Judul</th>
-                  <th className="px-4 py-2">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {timeline.length === 0 ? (
-                  <tr className="border-b">
-                    <td colSpan="4" className="px-4 py-2 text-gray-500">
-                      Tidak ada timeline
-                    </td>
-                  </tr>
-                ) : (
-                  timeline.map((item, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="px-4 py-2 w-3/12">
-                        {convertTimezone(item.created_at, false)}
-                      </td>
-                      <td className="px-4 py-2">{item.title}</td>
-                      <td className="px-4 py-2">{item.subtitle}</td>
-                      <td className="px-4 py-2">
-                        <button
-                          className="border-2 border-red-500 text-red-500 font-medium px-3 py-1 rounded-lg hover:bg-red-100 transition-all duration-300 cursor-pointer"
-                          onClick={async () => {
-                            socket.emit("delete-timeline", {
-                              ticket: formData.ticket,
-                              id: item.id,
-                            });
-                          }}>
-                          Hapus
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
           {/* Tombol Aksi: Simpan Perubahan dan Hapus Formulir */}
           <div className="flex justify-between">
             <button
               onClick={handleSave}
               className="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-2 rounded transition">
               Simpan Perubahan
-            </button>
-            <button
-              onClick={handleModalOpen}
-              className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-2 rounded transition">
-              Tambah timeline
             </button>
             <button
               onClick={handleDelete}
@@ -652,7 +533,11 @@ const EditFormulir = () => {
           <p className="font-bold">Pesan dengan user</p>
           <div
             ref={chatContainerRef}
-            className="w-full h-[400px] max-h-[400px] overflow-y-auto no-scrollbar flex flex-col bg-white border-primary border-t border-x rounded-t-lg shadow items-start mt-4 px-4 pt-4">
+            className={`w-full h-[400px] max-h-[400px] overflow-y-auto no-scrollbar flex flex-col bg-white border-primary ${
+              formData.status === "Selesai"
+                ? "border rounded-lg"
+                : "border-t border-x rounded-t-lg"
+            } shadow items-start mt-4 px-4 pt-4`}>
             <div className="w-full border border-primary bg-white rounded-lg px-4 py-2 sticky top-0">
               <p className="font-medium">Tiket Pesan : {formData.ticket}</p>
             </div>
@@ -661,9 +546,10 @@ const EditFormulir = () => {
                 <BubbleChat
                   key={index}
                   sender={message.name}
-                  role="Me"
-                  myRole="Me"
+                  role="Saya"
+                  myRole="Saya"
                   message={message.message}
+                  date={message.created_at}
                 />
               ) : (
                 <BubbleChat
@@ -672,11 +558,15 @@ const EditFormulir = () => {
                   role={message.role}
                   myRole={user.role}
                   message={message.message}
+                  date={message.created_at}
                 />
               )
             )}
           </div>
-          <div className="flex w-full border rounded-b-lg border-primary bg-gray-200 px-4 py-2 gap-2">
+          <div
+            className={`${
+              formData.status === "Selesai" ? "hidden" : "flex"
+            } w-full border rounded-b-lg border-primary bg-gray-200 px-4 py-2 gap-2`}>
             <textarea
               ref={textareaRef}
               rows="1"

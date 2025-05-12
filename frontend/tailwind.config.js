@@ -11,8 +11,8 @@ export default {
         xs: "475px",
       },
       colors: {
-        primary: "#1976d2", // Warna biru
-        "primary-hover": "#115293", // Warna biru gelap
+        primary: "#193cb8", // Warna biru
+        "primary-hover": "#1638aa", // Warna biru gelap
         secondary: "#f4f8fd", // Warna biru muda
       },
     },

@@ -91,11 +91,11 @@ const LoginPage = () => {
               Login sebagai Admin
             </a>
           </div>
-          <div className="flex justify-center mt-2 mx-auto">
+          {/* <div className="flex justify-center mt-2 mx-auto">
             <a href="/user/register" className="text-center hover:underline">
               Belum punya akun? Silakan daftar di sini.
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

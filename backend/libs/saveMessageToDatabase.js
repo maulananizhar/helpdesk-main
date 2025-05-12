@@ -21,12 +21,12 @@ const saveMessageToDatabase = async (room, name, sender, role, message) => {
     }
 
     // Simpan pesan ke database
-    await db.query(
-      "INSERT INTO chat (room, name, sender, role, message) VALUES ($1, $2, $3, $4, $5)",
+    const result = await db.query(
+      "INSERT INTO chat (room, name, sender, role, message) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [room, name, sender, role, message]
     );
 
-    return;
+    return result.rows[0]; // Mengembalikan pesan yang baru disimpan
   } catch (error) {
     // Log error jika terjadi kesalahan saat menyimpan pesan
     console.error("Error sending message:", error);

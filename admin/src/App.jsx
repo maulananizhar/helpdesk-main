@@ -41,7 +41,7 @@ const App = () => {
             <Route path="/user-lists" element={<UserLists />} />
             <Route path="/edit-form/:id" element={<EditFormulir />} />
             <Route path="/layanan" element={<JenisLayanan />} />
-            <Route path="/ulasan-pengguna" element={<UlasanHelpdesk />} />
+            <Route path="/ulasan-helpdesk" element={<UlasanHelpdesk />} />
             <Route path="/ulasan-pic" element={<UlasanPIC />} />
             <Route path="/formulir-pic" element={<FormulirPIC />} />
             <Route path="/edit-form-pic/:id" element={<EditFormulirPIC />} />

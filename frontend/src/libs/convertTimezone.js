@@ -1,5 +1,5 @@
 // Fungsi untuk mengonversi waktu UTC ke Waktu Indonesia Barat (WIB) dan mengembalikan format tanggal dan waktu dalam bahasa Indonesia.
-const convertTimezone = (utcString, day = true) => {
+const convertTimezone = (utcString, day = true, time = false) => {
   const wibDate = new Date(utcString); // Mengonversi UTC ke Waktu Indonesia Barat (WIB)
 
   // Nama hari dalam bahasa Indonesia
@@ -17,6 +17,11 @@ const convertTimezone = (utcString, day = true) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  // Jika hanya waktu yang diminta
+  if (time) {
+    return `${waktu}`;
+  }
 
   // Mengembalikan format waktu sesuai dengan parameter day
   if (day) {

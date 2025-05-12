@@ -168,22 +168,30 @@ const updateUser = async (req, res) => {
 // Fungsi untuk membuat user baru
 const createUser = async (req, res) => {
   // Ambil data yang diperlukan dari body request
-  const { nama, role, email, password } = req.body;
+  const { nama, role, unit, email, password } = req.body;
 
   // Validasi: Pastikan semua bidang telah diisi
-  if (!nama || !role || !email || !password) {
+  if (!nama || !role || !unit || !email || !password) {
     return res.status(400).json({ message: "Semua bidang harus diisi!" });
   }
 
   try {
+    const existingUser = await db.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
+    // Jika email sudah terdaftar, kembalikan error 409 (Conflict)
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({ message: "Email sudah terdaftar!" });
+    }
     // Buat salt untuk hashing password
     const salt = await bcrypt.genSalt(10);
     // Hash password menggunakan salt
     const hashedPassword = await bcrypt.hash(password, salt);
     // Query untuk memasukkan user baru ke database beserta password yang sudah di-hash
     const result = await db.query(
-      "INSERT INTO users (nama, role, email, password, verify) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [nama, role, email, hashedPassword, true]
+      "INSERT INTO users (nama, role, unit, email, password, verify) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [nama, role, unit, email, hashedPassword, true]
     );
     // Kirim data user baru dengan status 201 (Created)
     res.status(201).json(result.rows[0]);

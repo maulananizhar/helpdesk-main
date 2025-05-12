@@ -57,7 +57,12 @@ const submitForm = async (req, res) => {
 
     await db.query(
       "INSERT INTO timeline (ticket, title, subtitle) VALUES ($1, $2, $3)",
-      [ticket, "Diajukan", "Laporan sedang diajukan"]
+      [ticket, "Baru", "Permintaan telah dibuat"]
+    );
+
+    await db.query(
+      "INSERT INTO timeline (ticket, title, subtitle) VALUES ($1, $2, $3)",
+      [ticket, "Diajukan", "Permintaan sedang diajukan"]
     );
 
     // Dapatkan instance io (WebSocket) yang disimpan dalam aplikasi untuk mengirim notifikasi secara real-time
