@@ -317,13 +317,13 @@ const EditFormulir = () => {
       if (formData.pics.length > 0) {
         socket.emit("send-timeline", {
           ticket: formData.ticket,
-          title: "Dikerahkan ke PIC",
-          subtitle: `Permintaan dikerahkan kepada PIC atas nama ${names}`,
+          title: "Diserahkan ke PIC",
+          subtitle: `Permintaan diserahkan kepada PIC atas nama ${names}`,
         });
         socket.emit("send-notification", {
           sender: user.email,
           receiver: formData.email,
-          message: `Permintaan anda telah dikerahkan kepada PIC (${names}) - ${formData.ticket}`,
+          message: `Permintaan anda telah diserahkan kepada PIC (${names}) - ${formData.ticket}`,
         });
       }
 

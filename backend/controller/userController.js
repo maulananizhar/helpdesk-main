@@ -280,7 +280,7 @@ const loginUser = async (req, res) => {
         unit: user.unit,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "6h" }
+      { expiresIn: "1h" }
     );
     res.json({ success: true, token });
   } catch (err) {
@@ -552,7 +552,7 @@ const addTestimonial = async (req, res) => {
       VALUES (
         $1,
         $2,
-        (SELECT id_jenislayanan FROM formpelayanan WHERE ticket = $3),
+        (SELECT id_subjenislayanan FROM formpelayanan WHERE ticket = $3),
         $4,
         $5,
         $6,

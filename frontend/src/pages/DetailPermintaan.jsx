@@ -215,7 +215,7 @@ const DetailPermintaan = () => {
         <div className="fixed inset-0 bg-black/80 flex justify-center items-center z-50">
           <div className="bg-primary text-gray-900 w-full max-w-lg p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold text-center text-white mb-6">
-              Penilaian terhadap helpdesk
+              Penilaian terhadap aplikasi helpdesk
             </h2>
             <div className="mb-6">
               <div className="flex gap-1 justify-center">
