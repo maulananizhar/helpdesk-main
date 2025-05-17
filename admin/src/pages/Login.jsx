@@ -13,6 +13,10 @@ import {
   Box,
   Link,
 } from "@mui/material";
+import {
+  GoogleReCaptchaProvider,
+  GoogleReCaptcha,
+} from "react-google-recaptcha-v3"; // Mengimpor GoogleReCaptchaProvider dan GoogleReCaptcha dari react-google-recaptcha-v3
 
 const Login = () => {
   const [role, setRole] = useState("Admin");
@@ -25,6 +29,14 @@ const Login = () => {
   const { setPToken } = useContext(PICContext);
 
   const navigate = useNavigate();
+
+  // Menggunakan useState untuk mengelola state captcha
+  const [captcha, setCaptcha] = useState(false);
+
+  // Fungsi untuk menangani perubahan pada captcha
+  const handleCaptchaChange = () => {
+    setCaptcha(true);
+  };
 
   const onSubmitHandler = async event => {
     event.preventDefault();
@@ -65,59 +77,62 @@ const Login = () => {
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{ minHeight: "80vh", display: "flex", alignItems: "center" }}>
-      <Paper elevation={3} sx={{ p: 4, width: "100%", textAlign: "center" }}>
-        <Typography variant="h4" gutterBottom>
-          {role} Login
-        </Typography>
-        <Box
-          component="form"
-          onSubmit={onSubmitHandler}
-          noValidate
-          sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            label="Email"
-            variant="outlined"
-            margin="normal"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Password"
-            type="password"
-            variant="outlined"
-            margin="normal"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2 }}
-            disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </Button>
-        </Box>
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          {role === "Admin" ? "Login sebagai PIC?" : "Login sebagai Admin?"}{" "}
-          <Link
-            component="button"
-            variant="body2"
-            onClick={() => setRole(role === "Admin" ? "PIC" : "Admin")}
-            sx={{ textDecoration: "underline", cursor: "pointer" }}>
-            Klik di sini
-          </Link>
-        </Typography>
-      </Paper>
-    </Container>
+    <GoogleReCaptchaProvider reCaptchaKey={import.meta.env.VITE_RECAPTCHA_KEY}>
+      <Container
+        maxWidth="sm"
+        sx={{ minHeight: "80vh", display: "flex", alignItems: "center" }}>
+        <Paper elevation={3} sx={{ p: 4, width: "100%", textAlign: "center" }}>
+          <Typography variant="h4" gutterBottom>
+            {role} Login
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={onSubmitHandler}
+            noValidate
+            sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Email"
+              variant="outlined"
+              margin="normal"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              variant="outlined"
+              margin="normal"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+            <GoogleReCaptcha onVerify={handleCaptchaChange} />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+              disabled={loading || !captcha}>
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </Box>
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            {role === "Admin" ? "Login sebagai PIC?" : "Login sebagai Admin?"}{" "}
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => setRole(role === "Admin" ? "PIC" : "Admin")}
+              sx={{ textDecoration: "underline", cursor: "pointer" }}>
+              Klik di sini
+            </Link>
+          </Typography>
+        </Paper>
+      </Container>
+    </GoogleReCaptchaProvider>
   );
 };
 
